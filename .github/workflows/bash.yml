@@ -1,0 +1,15 @@
+    name: Run Bash Script
+
+    on: [push] 
+
+    jobs:
+      build:
+        runs-on: ubuntu-latest 
+
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4 
+
+          - name: Execute my Bash script
+            run: bash ./my_script.sh 
+    
