@@ -12,4 +12,12 @@
 
           - name: Execute my Bash script
             run: bash ./arthematic.sh 
-    
+          - name: Execute my Bash script
+            run: bash ./redirector.sh
+          - name: Execute my Bash script
+            run: bash ./find_me.sh
+          - name: Execute my Bash script
+            run: bash ./for_in_loop.sh
+          - name: Execute my Bash script
+            run: bash ./nested_if_else.sh
+            
