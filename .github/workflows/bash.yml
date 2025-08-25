@@ -11,5 +11,5 @@
             uses: actions/checkout@v4 
 
           - name: Execute my Bash script
-            run: bash ./my_script.sh 
+            run: bash ./arthematic.sh 
     
