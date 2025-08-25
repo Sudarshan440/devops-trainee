@@ -23,12 +23,11 @@
           - name: Execute my Bash script
             run: bash ./nested_if_else.sh
           - name: Execute my Bash script
-            run: bash ./para_for_in_loop.sh
+            run: bash ./para_for_in_loop.sh "Apple Mangoes Orange" "Ferrari BMW AMG" "Amar Akbar Anthony" "Basketball Cricket TableTennis"
           - name: Execute my Bash script
-            run: bash ./para_nested_if_else.sh
+            run: bash ./para_nested_if_else.sh 100 100
           - name: Execute my Bash script
-            run: bash ./para_arthematic.sh
-
+            run: bash ./para_arthematic.sh 200 + 200
             
           # - name: Log in to Docker Hub
           #   uses: docker/login-action@v3
