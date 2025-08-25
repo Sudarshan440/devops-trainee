@@ -11,7 +11,7 @@
             uses: actions/checkout@v4
             
           - name: Make Script Executable
-            run:  chmod +x scripts/*.sh
+            run:  chmod +x ./scripts/*.sh
           - name: Execute my Bash script
             run: bash ./arthematic.sh 
           - name: Execute my Bash script
