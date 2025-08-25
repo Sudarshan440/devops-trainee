@@ -30,7 +30,7 @@
               password: ${{ secrets.DOCKER_PASSWORD }}
 
           - name: Build Docker image
-            run: docker build -t sudarshan101/github-action-workflow:latest
+            run: docker build -t sudarshan101/github-action-workflow:latest .
 
           - name: Push Docker image
             run: docker push sudarshan101/github-action-workflow:latest
