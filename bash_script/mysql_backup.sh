@@ -1,26 +1,30 @@
 #!/bin/bash
 
-USER_NAME="sudarshan"
-PASSWORD="12345"
-HOST_NAME="localhost"
-BACKUP_BASE_DIR="/home/ncs/sudarshan/backup"
+# USER_NAME="sudarshan"
+# PASSWORD="12345"
+# HOST_NAME="localhost"
+# BACKUP_BASE_DIR="/home/ncs/sudarshan/backup"
 DATE=$(date +"%Y-%m-%d_%H-%M-%S")
-
+. ./secrets.ini
+if [ ! -d "$BACKUP_BASE_DIR" ]; then
+    echo "Error: Directory '$BACKUP_BASE_DIR' not found."
+    exit 1
+fi
 usage() {
-    echo "Usage: $(basename "$0") [-t <true|false>] [-f <true|false>] [-s <true|false>] [-a <true|false>] [-d <db_name>] [-n <table_name>] [-h]"
+    echo "Usage: $(basename "$0") [-t <true|false>] [-f <true|false>] [-o <true|false>] [-a <true|false>] [-d <db_name>] [-tn <table_name>] [-h]"
     echo ""
     echo "  -t <true|false>   Take table backup"
     echo "  -f <true|false>   Take full database backup"
     echo "  -o <true|false>   Take only-data backup"
     echo "  -a <true|false>   Take all-database backup"
     echo "  -d <db_name>      Database name (required for -t, -f, -s)"
-    echo "  -n <table_name>   Table name (required for -t; optional for -s)"
-    echo "  -h                Show thisall_databases_2025-08-2 help message"
+    echo "  -n <table_name>  Table name (required for -n)"
+    echo "  -h                Show this all_databases_2025-08-2 help message"
     echo ""
     echo "Examples:"
-    echo "  $(basename "$0") -t true -d mydb -n users"
+    echo "  $(basename "$0") -t true -d mydb -tn users"
     echo "  $(basename "$0") -f true -d mydb"
-    echo "  $(basename "$0") -0 true -d mydb [-n users]"
+    echo "  $(basename "$0") -o true -d mydb [-n users]"
     echo "  $(basename "$0") -a true"
     exit 1
 }
@@ -33,12 +37,7 @@ ALL_BACKUP=false
 DATABASE_NAME=""
 TABLE_NAME=""
 
-RETENTION_DAYS=1
-
-if [ ! -d "$BACKUP_BASE_DIR" ]; then
-    echo "Error: Directory '$BACKUP_BASE_DIR' not found."
-    exit 1
-fi
+RETENTION_DAYS=7
 
 echo "Starting retention cleanup in '$BACKUP_BASE_DIR'..."
 
@@ -51,7 +50,7 @@ find "$BACKUP_BASE_DIR" -type f -mtime +$RETENTION_DAYS -exec rm -f {} \;
 echo "Retention cleanup completed. Files older than $RETENTION_DAYS days have been deleted."
 
 # Parse options
-while getopts ":t:f:o:a:d:n:h" opt; do
+while getopts ":t:f:o:a:d:tn:h" opt; do
   case $opt in
     t) TABLE_BACKUP="$OPTARG" ;;
     f) FULL_BACKUP="$OPTARG" ;;
@@ -113,6 +112,12 @@ if [[ "$ALL_BACKUP" == "true" ]]; then
   mkdir -p "$BACKUP_DIR"
   mysqldump -u "$USER_NAME" -p"$PASSWORD" -h "$HOST_NAME" --all-databases > "$BACKUP_FILE"
 fi
+# . ./secrets.ini
+
+# if [ ! -d "$BACKUP_BASE_DIR" ]; then
+#     echo "Error: Directory '$BACKUP_BASE_DIR' not found."
+#     exit 1
+# fi
 
 # Final message
 if [[ "$TABLE_BACKUP" == "true" || "$FULL_BACKUP" == "true" || "$DATA_ONLY_BACKUP" == "true" || "$ALL_BACKUP" == "true" ]]; then
@@ -127,5 +132,3 @@ else
   usage
 fi
 exit 0
-
-# 00 12 * * 1 bash /home/ncs/paramaterised/backup.sh
