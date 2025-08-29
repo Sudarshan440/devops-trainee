@@ -1,10 +1,7 @@
 #!/bin/bash
-
-# USER_NAME="sudarshan"
-# PASSWORD="12345"
-# HOST_NAME="localhost"
-# BACKUP_BASE_DIR="/home/ncs/sudarshan/backup"
-
+set -ex
+cd $(dirname $0)
+# cd "$(dirname "$(readlink -f "$0")")"
 . ./secrets.ini
 
 usage() {
@@ -31,8 +28,8 @@ BACKUP_FILENAME=""
 # Parse options
 while getopts ":fod:b:h" opt; do
   case $opt in
-    f) FULL_RESTORE="$OPTARG" ;;
-    o) DATA_ONLY_RESTORE="$OPTARG" ;;
+    f) FULL_RESTORE=true ;;
+    o) DATA_ONLY_RESTORE=true ;;
     d) DATABASE_NAME="$OPTARG" ;;
     b) BACKUP_FILENAME="$OPTARG" ;;
     h) usage ;;
@@ -40,7 +37,6 @@ while getopts ":fod:b:h" opt; do
     :) echo "Option -$OPTARG requires an argument." >&2; usage ;;
   esac
 done
-
 # Backup file path
 BACKUP_PATH="${BACKUP_BASE_DIR}/${DATABASE_NAME}/${BACKUP_FILENAME}"
 
@@ -64,35 +60,8 @@ if [[ "$FULL_RESTORE" == true && "$DATA_ONLY_RESTORE" == true ]]; then
     usage
 fi
 
-# # Check if database exists
-# DB_EXISTS=$(mysql -u "$USER_NAME" -p"$PASSWORD" -h "$HOST_NAME" -e "SHOW DATABASES LIKE '${DATABASE_NAME}';" | grep "$DATABASE_NAME")
-
-# if [ -z "$DB_EXISTS" ]; then
-#     echo "Database '$DATABASE_NAME' does not exist. Creating..."
-#     mysql -u "$USER_NAME" -p"$PASSWORD" -h "$HOST_NAME" -e "CREATE DATABASE \`${DATABASE_NAME}\`;"
-#     if [ $? -ne 0 ]; then
-#         echo "Failed to create database."
-#         exit 1
-#     fi
-# else
-#     # If database exists, create a new restored DB instead
-#     TIMESTAMP=$(date +%Y%m%d_%H-M-S)
-#     ORIGINAL_DB="$DATABASE_NAME"
-#     DATABASE_NAME="${DATABASE_NAME}_restored_${TIMESTAMP}"
-
-#     echo "Database '$ORIGINAL_DB' already exists."
-#     echo "Creating test database: '$DATABASE_NAME' instead..."
-
-#     mysql -u "$USER_NAME" -p"$PASSWORD" -h "$HOST_NAME" -e "CREATE DATABASE \`${DATABASE_NAME}\`;"
-#     if [ $? -ne 0 ]; then
-#         echo " Failed to create test database."
-#         exit 1
-#     fi
-# fi
-
-#Check if database exists
-
-DB_EXISTS=$(mysql -u "$USER_NAME" -p"$PASSWORD" -h "$HOST_NAME" -e "SHOW DATABASES LIKE '${DATABASE_NAME}';" | grep "$DATABASE_NAME")
+# DB_EXISTS=$(mysql -u "$USER_NAME" -p"$PASSWORD" -h "$HOST_NAME" -sse "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME='${DATABASE_NAME}'")
+DB_EXISTS=$(mysql -u "$USER_NAME" -p"$PASSWORD" -h "$HOST_NAME" -sse "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME='${DATABASE_NAME}'")
 
 if [ -z "$DB_EXISTS" ]; then
     echo "Database '$DATABASE_NAME' does not exist. Creating..."
@@ -117,5 +86,3 @@ else
     echo "Restore failed."
     exit 1
 fi
-
-exit 0

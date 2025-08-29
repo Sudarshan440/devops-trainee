@@ -1,11 +1,18 @@
 #!/bin/bash
 
-# USER_NAME="sudarshan"
-# PASSWORD="12345"
-# HOST_NAME="localhost"
-# BACKUP_BASE_DIR="/home/ncs/sudarshan/backup"
+set -e
+
+########################################################
+## FULL Backup - mysql_backup.sh -f true -d countries ##
+## Only Data - mysql_backup.sh -o true -d countries   ##
+## Dedicated Table mysql_backup.sh -o true -d countries -n states
+
+
 DATE=$(date +"%Y-%m-%d_%H-%M-%S")
+
+cd $(dirname $0)
 . ./secrets.ini
+
 if [ ! -d "$BACKUP_BASE_DIR" ]; then
     echo "Error: Directory '$BACKUP_BASE_DIR' not found."
     exit 1
@@ -17,12 +24,12 @@ usage() {
     echo "  -f <true|false>   Take full database backup"
     echo "  -o <true|false>   Take only-data backup"
     echo "  -a <true|false>   Take all-database backup"
-    echo "  -d <db_name>      Database name (required for -t, -f, -s)"
-    echo "  -n <table_name>  Table name (required for -n)"
+    echo "  -d <db_name>      Database name (required for -t, -f, -o)"
+    echo "  -n <table_name>   Table name (required for -n)"
     echo "  -h                Show this all_databases_2025-08-2 help message"
     echo ""
     echo "Examples:"
-    echo "  $(basename "$0") -t true -d mydb -tn users"
+    echo "  $(basename "$0") -t true -d mydb -n users"
     echo "  $(basename "$0") -f true -d mydb"
     echo "  $(basename "$0") -o true -d mydb [-n users]"
     echo "  $(basename "$0") -a true"
@@ -50,7 +57,7 @@ find "$BACKUP_BASE_DIR" -type f -mtime +$RETENTION_DAYS -exec rm -f {} \;
 echo "Retention cleanup completed. Files older than $RETENTION_DAYS days have been deleted."
 
 # Parse options
-while getopts ":t:f:o:a:d:tn:h" opt; do
+while getopts ":t:f:o:a:d:n:h" opt; do
   case $opt in
     t) TABLE_BACKUP="$OPTARG" ;;
     f) FULL_BACKUP="$OPTARG" ;;
@@ -112,12 +119,6 @@ if [[ "$ALL_BACKUP" == "true" ]]; then
   mkdir -p "$BACKUP_DIR"
   mysqldump -u "$USER_NAME" -p"$PASSWORD" -h "$HOST_NAME" --all-databases > "$BACKUP_FILE"
 fi
-# . ./secrets.ini
-
-# if [ ! -d "$BACKUP_BASE_DIR" ]; then
-#     echo "Error: Directory '$BACKUP_BASE_DIR' not found."
-#     exit 1
-# fi
 
 # Final message
 if [[ "$TABLE_BACKUP" == "true" || "$FULL_BACKUP" == "true" || "$DATA_ONLY_BACKUP" == "true" || "$ALL_BACKUP" == "true" ]]; then
@@ -131,4 +132,5 @@ else
   echo "No backup command provided. Use -t, -f, -o, or -a with true."
   usage
 fi
-exit 0
+
+
