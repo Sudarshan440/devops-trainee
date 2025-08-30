@@ -1,7 +1,11 @@
 #!/bin/bash
 set -ex
+
+#################################################################################################
+## FULL Backup - mysql_restore.sh -f -d countries -b countries_full_2025-08-28_12-00-00.sql######
+## Only Data - mysql_restore.sh -o -d countries -b countries_only_data_2025-08-28_12-00-00.sql ##
+
 cd $(dirname $0)
-# cd "$(dirname "$(readlink -f "$0")")"
 . ./secrets.ini
 
 usage() {

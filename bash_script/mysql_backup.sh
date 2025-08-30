@@ -2,10 +2,10 @@
 
 set -e
 
-########################################################
-## FULL Backup - mysql_backup.sh -f true -d countries ##
-## Only Data - mysql_backup.sh -o true -d countries   ##
-## Dedicated Table mysql_backup.sh -o true -d countries -n states
+###################################################################
+## FULL Backup - mysql_backup.sh -f true -d countries #############
+## Only Data - mysql_backup.sh -o true -d countries   #############
+## Dedicated Table mysql_backup.sh -o true -d countries -n states##
 
 
 DATE=$(date +"%Y-%m-%d_%H-%M-%S")
