@@ -1,0 +1,27 @@
+- name: 
+  hosts: all
+  gather_facts: false
+  roles:
+    - java
+  tasks:
+    - name: Variable Priority
+      debug:
+        msg: "Install Dir: {{ install_dir }}, Timezone: {{ timezone }}"
+      vars:
+        install_dir: "/home/ncs/sudarshan"
+        timezone: "Europe/London"
+
+# The variable precedence order from highest to lowest is:
+# 7. Playbook extra vars (always highest precedence, can be set with -e on command line)
+# 6. Playbook play vars (defined in vars section)
+# 5. Inventory host_vars/server1.yml
+# 4. group_vars/webservers.yml
+# 3. group_vars/all.yml
+# 2. Role vars/main.yml
+# 1. Role defaults/main.yml (always lowest precedence)
+
+
+
+
+
+
