@@ -1,0 +1,12 @@
+# handlers file for roles/nginx
+- name: restart nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+
+- name: wait for nginx 
+  ansible.builtin.wait_for:
+    port: 80
+    state: started
+    delay: 5
+    timeout: 30 

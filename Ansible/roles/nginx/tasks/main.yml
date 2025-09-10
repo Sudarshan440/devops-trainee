@@ -1,0 +1,31 @@
+# tasks file for roles/nginx
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Copy index.html
+  ansible.builtin.copy:
+    src: index.html
+    dest: /var/www/html/index.html
+  notify:
+    - restart nginx
+
+- name: Start nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
+  notify: wait for nginx
+    
+
+- name: Ensure nginx is running
+  ansible.builtin.systemd:
+    name: nginx
+    state: started
+    enabled: yes
+  register: nginx_status
+  until: nginx_status.status.ActiveState == "active"
+  retries: 5
+  delay: 3

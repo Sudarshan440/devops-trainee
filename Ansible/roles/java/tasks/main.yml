@@ -1,0 +1,49 @@
+# tasks file for role/java
+- name: Ensure download directory exists
+  ansible.builtin.file:
+    path: "{{ download_dir }}"
+    state: directory
+    
+- name : Ensure install directory exists
+  ansible.builtin.file:
+    path: "{{ install_dir }}"
+    state: directory
+
+- name: Download Java package
+  ansible.builtin.get_url:
+    url: "{{ download_url }}"
+    dest: "{{ download_dir }}/{{ java_tar }}"
+    mode: '0644'
+
+- name: Ensure Java is already installed
+  ansible.builtin.find:
+    paths: "{{ install_dir }}"
+    patterns: "jdk-{{ java_version }}*"
+    file_type: directory
+  register: java_check
+
+- name: Fail if Java already exists
+  ansible.builtin.fail:
+    msg: "Java {{ java_version }} is already installed!"
+  when: java_check.matched > 0
+
+- name: Extract Java package
+  ansible.builtin.unarchive:
+    src: "{{ download_dir }}/{{ java_tar }}"
+    dest: "{{ install_dir }}"
+    remote_src: yes
+  
+- name: Find Java installation directory
+  ansible.builtin.find:
+    paths: "{{ install_dir }}"
+    patterns: "jdk-{{ java_version }}*"
+    file_type: directory
+  register: java_dir
+  
+- name: Set JAVA_HOME environment variable
+  ansible.builtin.blockinfile:
+    path: ~/.bashrc
+    block: |
+      export JAVA_HOME={{ java_dir.files[0].path }}
+      export PATH=$JAVA_HOME/bin:$PATH
+  when: java_dir.matched > 0
