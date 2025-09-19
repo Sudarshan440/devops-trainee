@@ -1,15 +1,24 @@
 - name: 
   hosts: all
   gather_facts: false
-  # vars:
-  #   install_dir: "/home/ncs/sudarshan"
-  #   timezone: "Europe/London"
+  
+  vars:
+    install_dir: "/home/ncs/sudarshan"
+    timezone: "Europe/London"
   tasks:
       - name: Run Java role safely
         block:
           - name: Include Java role
             include_role:
               name: java
+              vars:
+                install_dir: "/home/ncs/sudarshan"
+                timezone: "Europe/London"
+            vars:
+              install_dir: "/home/ncs/sudarshan_workspace"
+              timezone: "Asia/Kolkata"
+
+
         rescue:
           - name: Handle failure if Java role fails
             debug:

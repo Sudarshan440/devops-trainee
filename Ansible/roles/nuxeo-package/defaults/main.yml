@@ -1,0 +1,2 @@
+ansible_failed_result: " nuxeo-package installation failed... "
+# nuxeo_docker_image_tag: latest
