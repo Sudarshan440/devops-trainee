@@ -4,7 +4,7 @@ variable "create_vpc" {
 }
 variable "vpc_name" {
   type    = string
-  default = "my-vpc"
+  default = "my-vpc1"
 } 
 variable "vpc_cidr" {
   type    = string
