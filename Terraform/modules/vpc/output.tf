@@ -18,3 +18,11 @@ output "public_subnet_ids" {
   ]
 }
 
+output "aws_internet_gateway_id" {
+  description = "Internet Gateway ID"
+  value       = aws_internet_gateway.igw[0].id
+}
+output "public_route_table_id" {
+  description = "Public Route Table ID"
+  value       = aws_route_table.public_rt[0].id
+}

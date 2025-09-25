@@ -61,4 +61,39 @@ resource "aws_subnet" "private_2" {
   tags              = merge(var.tags, { Name = local.private_subnet_names[1] })
 }
 
+  # Internet Gateway
+resource "aws_internet_gateway" "igw" {
+  count  = var.create_vpc ? 1 : 0
+  vpc_id = aws_vpc.my_vpc[0].id
+  tags   = merge(var.tags, { Name = "${var.vpc_name}-igw" })
+}
 
+# Public Route Table
+resource "aws_route_table" "public_rt" {
+  count  = var.create_vpc ? 1 : 0
+  vpc_id = aws_vpc.my_vpc[0].id
+
+  tags = merge(var.tags, { Name = "${var.vpc_name}-public_rt" })
+}
+
+# Route for Internet access in Public Route Table
+resource "aws_route" "public_internet_access" {
+  count                  = var.create_vpc ? 1 : 0
+  route_table_id         = aws_route_table.public_rt[0].id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.igw[0].id
+}
+
+# Associate Public Subnet 1 with Public Route Table
+resource "aws_route_table_association" "public_1_assoc" {
+  count          = var.create_vpc ? 1 : 0
+  subnet_id      = aws_subnet.public_1[0].id
+  route_table_id = aws_route_table.public_rt[0].id
+}
+
+# Associate Public Subnet 2 with Public Route Table
+resource "aws_route_table_association" "public_2_assoc" {
+  count          = var.create_vpc ? 1 : 0
+  subnet_id      = aws_subnet.public_2[0].id
+  route_table_id = aws_route_table.public_rt[0].id
+}
