@@ -1,4 +1,4 @@
-# env.sh
+# env.sh  ### Source everytime session Start #########
 # export TF_VAR_vpc_name="dev-vpc"
 export TF_VAR_region="ap-northeast-1" #tokyo
 export TF_VAR_tags='{"Environment":"dev","Project":"vpc-practice-55"}'

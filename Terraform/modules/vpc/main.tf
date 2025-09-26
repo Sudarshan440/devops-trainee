@@ -97,3 +97,31 @@ resource "aws_route_table_association" "public_2_assoc" {
   subnet_id      = aws_subnet.public_2[0].id
   route_table_id = aws_route_table.public_rt[0].id
 }
+
+# Null Resource Trigger
+resource "null_resource" "vpc_changes_trigger" {
+  triggers = {
+    vpc_id           = aws_vpc.my_vpc[0].id
+    public_subnet_1  = aws_subnet.public_1[0].id
+    public_subnet_2  = aws_subnet.public_2[0].id
+  }
+
+  provisioner "local-exec" {
+    command = "${path.module}/../../trigger.sh ${self.triggers.vpc_id} ${self.triggers.public_subnet_id}"
+  }
+}
+
+# In Terraform, the keyword `self` is used within resource blocks,
+# particularly in dynamic blocks or provisioners, 
+# to refer to the current resource instance. 
+# It acts as a reference to the resource being defined,
+# allowing you to access its attributes and properties directly.
+
+# The use of `self` helps keep your Terraform code modular and 
+# avoids hardcoding resource attributes.
+
+# Example Usage: 
+# If you have a resource like `aws_instance`, 
+# you could use `self.private_ip` inside a provisioner to get 
+# the instance's private IP address.
+# This makes your code more flexible and maintainable.

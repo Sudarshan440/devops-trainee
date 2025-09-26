@@ -21,4 +21,3 @@ variable "tags" {
     Project     = "vpc-project-007"
   }
 }
-
