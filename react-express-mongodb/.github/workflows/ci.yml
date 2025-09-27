@@ -30,4 +30,4 @@ jobs:
           docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
           docker push $IMAGE_NAME:latest
 
-####################### THE END ############################################
+#######################< THE END >############################################
