@@ -1,2 +1,0 @@
-nuxeo_docker_image : nuxeo/nuxeo
-nuxeo_docker_container_name : nuxeo

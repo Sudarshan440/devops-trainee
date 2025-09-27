@@ -1,8 +1,0 @@
-# defaults file for role/java
-
-java_version: "21"
-download_dir: "/home/ncs/Downloads"
-install_dir: "/home/ncs/sudarshan"
-java_tar: "jdk-{{ java_version }}_linux-x64_bin.tar.gz"
-download_url: "https://download.oracle.com/java/{{ java_version }}/latest/{{ java_tar }}"
-timezone: "Antarctica/Palmer"

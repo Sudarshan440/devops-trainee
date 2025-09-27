@@ -1,4 +1,0 @@
-# vars file for role/java
-
-install_dir: "/home/ncs/sudarshan"
-timezone: "france/Paris"
