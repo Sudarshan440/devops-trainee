@@ -30,12 +30,12 @@ jobs:
       # 4 Build backend Docker image
       - name: Build backend image
         run: |
-          docker build -t sudarshan101/my-docker-backend:latest ./iCinema
+          docker build -t sudarshan101/my-docker:backend ./iCinema
 
       # 5 Build frontend Docker image
       - name: Build frontend image
         run: |
-          docker build -t sudarshan101/my-docker-frontend:latest ./iCinema/frontend
+          docker build -t sudarshan101/my-docker:frontend ./iCinema/frontend
 
       # 6 Push backend image
       - name: Push backend image
