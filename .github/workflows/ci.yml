@@ -40,9 +40,9 @@ jobs:
       # 6 Push backend image
       - name: Push backend image
         run: |
-          docker push sudarshan101/my-docker-backend:latest
+          docker push sudarshan101/my-docker:backend
 
       # 7 Push frontend image
       - name: Push frontend image
         run: |
-          docker push sudarshan101/my-docker-frontend:latest
+          docker push sudarshan101/my-docker:frontend
