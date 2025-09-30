@@ -4,7 +4,7 @@ name: Build and Push Docker Images
 on:
   push:
     branches:
-      - feature/actions
+      - feature/workflow
 
 jobs:
   docker:
