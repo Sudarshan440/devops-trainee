@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - feature/workflow
+      - main
 
 jobs:
   docker:
