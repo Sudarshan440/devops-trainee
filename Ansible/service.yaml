@@ -1,0 +1,5 @@
+- name: Setup Webserver
+  hosts: localhost
+  become: yes
+  roles:
+    - nginx

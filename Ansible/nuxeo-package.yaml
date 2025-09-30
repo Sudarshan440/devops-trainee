@@ -1,0 +1,42 @@
+- name: nuxeo-package Installation Playbook
+  hosts: localhost
+  become: yes
+  collections: community.docker
+  gather_facts: no
+  tasks:
+      - name: Run nuxeo-package role safely
+        block:
+          - name: Include nuxeo-package role
+            include_role:
+              name: nuxeo-package
+        rescue:
+          - name: Handle failure if nuxeo-package role fails
+            debug:
+              msg: "nuxeo-package installation failed."
+              # msg: "{{ ansible_failed_result }}"
+
+          - name: Remove nuxeo container if exists
+            community.docker.docker_container:
+              name: nuxeo
+              state: absent
+            ignore_errors: true
+
+          - name: Retry nuxeo-package role
+            include_role:
+              name: nuxeo-package
+            register: retry_result
+            ignore_errors: true
+
+          - name: Show success message if retry succeeded
+            ansible.builtin.debug:
+             msg: "Retry of nuxeo-package role succeeded on second attempt."
+            when: retry_result is succeeded
+
+          - name: Show error message if retry failed
+            ansible.builtin.debug:
+             msg: "Retry of nuxeo-package role also failed. Please check logs!"
+            when: retry_result is failed
+        always:
+          - name: Final message
+            debug:
+              msg: "nuxeo-package installation block has finished (success or fail)."
