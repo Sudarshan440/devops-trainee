@@ -3,6 +3,7 @@ name: Docker Compose CI
 on:
   workflow_run:
     workflows: ["Build and Push Docker Images"]
+    branches: [main]
     types:
       - completed
 
