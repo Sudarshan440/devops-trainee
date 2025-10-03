@@ -65,8 +65,8 @@ jobs:
             --topic-arn $SNS_TOPIC_ARN \
             --subject "GitHub Actions Failed: $GITHUB_WORKFLOW" \
             --message "Workflow: $GITHUB_WORKFLOW
-Branch: $GITHUB_REF
-Run ID: $GITHUB_RUN_ID
-Repository: $GITHUB_REPOSITORY
-Failed step logs: $ERROR_LOG
-Check full logs at: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+              Branch: $GITHUB_REF
+              Run ID: $GITHUB_RUN_ID
+              Repository: $GITHUB_REPOSITORY
+              Failed step logs: $ERROR_LOG
+              Check full logs at: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
