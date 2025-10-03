@@ -29,7 +29,7 @@ jobs:
       # 4 Build backend Docker image
       - name: Build backend image
         run: |
-          docker build -t sudarshan101/my-docker-backend:latest ./iCinema
+          docker build -t sudarshan101/my-docker-backend:latest .
 
       # 5 Build frontend Docker image (corrected path)
       - name: Build frontend image
@@ -46,3 +46,27 @@ jobs:
       - name: Push frontend image
         run: |
           docker push sudarshan101/my-docker-frontend:latest
+
+      # Add SNS notification for failures
+      - name: Notify via AWS SNS on failure
+        if: failure()  # runs only if any previous step fails
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SNS_TOPIC_ARN: ${{ secrets.SNS_TOPIC_ARN }}
+        run: |
+          # Capture the last 50 lines of the GitHub Actions log
+          ERROR_LOG=$(tail -n 50 $GITHUB_WORKSPACE/.github/workflows/${GITHUB_WORKFLOW}.log || echo "No log available")
+
+          # Send the message to SNS
+          aws sns publish \
+            --region $AWS_REGION \
+            --topic-arn $SNS_TOPIC_ARN \
+            --subject "🚨 GitHub Actions Failed: $GITHUB_WORKFLOW" \
+            --message "Workflow: $GITHUB_WORKFLOW
+Branch: $GITHUB_REF
+Run ID: $GITHUB_RUN_ID
+Repository: $GITHUB_REPOSITORY
+Failed step logs: $ERROR_LOG
+Check full logs at: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
