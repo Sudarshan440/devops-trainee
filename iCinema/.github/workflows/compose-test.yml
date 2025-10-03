@@ -2,8 +2,7 @@ name: Docker Compose CI
 
 on:
   push:
-    branches: [ "feature/actions" ]
-  pull_request:
+    branches: main
 
 jobs:
   compose-test:
