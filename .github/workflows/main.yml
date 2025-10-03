@@ -16,7 +16,7 @@ jobs:
       - name: Install Ansible
         run: |
           sudo apt update
-          sudo apt install -y ansible
+          sudo apt install -y ansible-core
 
       # Save private key from GitHub secret
       - name: Set up SSH key
