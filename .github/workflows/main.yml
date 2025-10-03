@@ -31,8 +31,4 @@ jobs:
 
       - name: Run Ansible playbook
         run: |
-          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
-      #   run: |
-      #     ansible-playbook -i inventory.ini playbook.yml \
-      #       --private-key private_key.pem \
-      #       -u ubuntu
+          ansible-playbook -i inventory.ini ansible/playbook.yml
