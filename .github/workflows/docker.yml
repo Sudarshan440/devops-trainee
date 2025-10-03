@@ -29,44 +29,54 @@ jobs:
       # 4 Build backend Docker image
       - name: Build backend image
         run: |
-          docker build -t sudarshan101/my-docker-backend:latest .
+          docker build -t sudarshan101/my-docker-backend:latest . 2>&1 | tee logs/backend_build.log
 
       # 5 Build frontend Docker image (corrected path)
       - name: Build frontend image
         run: |
           docker build -f iCinema/frontend/Dockerfile \
-            -t sudarshan101/my-docker-frontend:latest ./iCinema/frontend
+            -t sudarshan101/my-docker-frontend:latest ./iCinema/frontend  2>&1 | tee logs/frontend_build.log
 
       # 6 Push backend image
       - name: Push backend image
         run: |
-          docker push sudarshan101/my-docker-backend:latest
+          docker push sudarshan101/my-docker-backend:latest 
+          
+          # Capture last 50 lines for SNS notification
+          tail -n 50 logs/backend_build.log > logs/backend_snippet.log
 
       # 7 Push frontend image
       - name: Push frontend image
         run: |
           docker push sudarshan101/my-docker-frontend:latest
+      
+          # Capture last 50 lines for SNS notification
+          tail -n 50 logs/backend_build.log > logs/frontend_snippet.log
 
-      # Add SNS notification for failures
-      - name: Notify via AWS SNS on failure
-        if: failure()  # runs only if any previous step fails
+      # 8 Publish error snippet to SNS (only if step fails)
+      - name: Notify via SNS on failure
+        if: failure()  # runs only if previous step fails
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           SNS_TOPIC_ARN: ${{ secrets.SNS_TOPIC_ARN }}
         run: |
-          # Capture the last 50 lines of the GitHub Actions log
-          ERROR_LOG=$(tail -n 50 $GITHUB_WORKSPACE/.github/workflows/${GITHUB_WORKFLOW}.log || echo "No log available")
-
-          # Send the message to SNS
+          ERROR_LOG=$(cat logs/backend_snippet.log)
           aws sns publish \
-            --region $AWS_REGION \
-            --topic-arn $SNS_TOPIC_ARN \
-            --subject "GitHub Actions Failed: $GITHUB_WORKFLOW" \
-            --message "Workflow: $GITHUB_WORKFLOW
-              Branch: $GITHUB_REF
-              Run ID: $GITHUB_RUN_ID
-              Repository: $GITHUB_REPOSITORY
-              Failed step logs: $ERROR_LOG
-              Check full logs at: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            --region "$AWS_REGION" \
+            --topic-arn "$SNS_TOPIC_ARN" \
+            --subject "GitHub Actions: Backend Build Failed" \
+            --message "$ERROR_LOG"
+      
+       # 9 Publish error snippet to SNS (only if step fails)
+      - name: Notify via SNS on failure
+        if: failure()  # runs only if previous step fails
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SNS_TOPIC_ARN: ${{ secrets.SNS_TOPIC_ARN }}
+        run: |
+          ERROR_LOG=$(cat logs/frontend_snippet.log)
+          aws sns publish \
+            --region "$AWS_REGION" \
+            --topic-arn "$SNS_TOPIC_ARN" \
+            --subject "GitHub Actions: Frontend Build Failed" \
+            --message "$ERROR_LOG"
