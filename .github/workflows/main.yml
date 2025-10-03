@@ -27,6 +27,7 @@ jobs:
       # Add EC2 host to known_hosts to avoid prompt
       - name: Add EC2 host
         run: |
+          mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
       
       - name: Create dynamic inventory
