@@ -1,0 +1,35 @@
+name: Docker Compose CI
+
+on:
+  push:
+    branches: main
+
+jobs:
+  compose-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1 Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2 Set up Docker Buildx (optional, but good for modern builds)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3 Build & run Docker Compose stack
+      - name: Build and run docker-compose
+        run: |
+          docker compose -f ./iCinema/docker-compose.yml up --build -d
+          sleep 15   # wait for containers to start
+          docker ps  # list running containers to verify
+
+      # 4 Optional health checks
+      - name: Check backend & frontend health
+        run: |
+          curl -f http://localhost:5000 || exit 1
+          curl -f http://localhost:3000 || exit 1
+
+      # 5 Tear down containers after test
+      - name: Stop containers
+        run: docker compose -f ./iCinema/docker-compose.yml down
