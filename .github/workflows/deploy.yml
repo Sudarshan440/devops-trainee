@@ -24,24 +24,20 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
 
-      - name: Create inventory
+      
+      # Add EC2 host to known_hosts to avoid prompt
+      - name: Add EC2 host
         run: |
-          echo "[icinema-server]" > inventory.ini
-          echo "${{ secrets.EC2_HOST }} ansible_user=${{ secrets.EC2_USER }} ansible_ssh_private_key_file=private_key.pem" >> inventory.ini
-
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+      
+      - name: Create dynamic inventory
+        run: |
+          echo "[icinema-server]" > iCinema/ansible/inventory.ini
+          echo "${{ secrets.EC2_HOST }} ansible_user=${{ secrets.EC2_USER }} ansible_ssh_private_key_file=private_key.pem" >> iCinema/ansible/inventory.ini
+          
       - name: Run Ansible playbook
         run: |
-          ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
+          ansible-playbook -i iCinema/ansible/inventory.ini iCinema/ansible/playbook.yml
 
-
-      # # Add EC2 host to known_hosts to avoid prompt
-      # - name: Add EC2 host
-      #   run: |
-      #     ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
-      # # Run ansible-playbook with this key
-      # - name: Run Ansible Playbook
-      #   run: |
-      #     ansible-playbook -i inventory.ini playbook.yml \
-      #       --private-key private_key.pem \
-      #       -u ubuntu
+    
