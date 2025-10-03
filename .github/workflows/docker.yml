@@ -63,7 +63,7 @@ jobs:
           aws sns publish \
             --region $AWS_REGION \
             --topic-arn $SNS_TOPIC_ARN \
-            --subject "🚨 GitHub Actions Failed: $GITHUB_WORKFLOW" \
+            --subject "GitHub Actions Failed: $GITHUB_WORKFLOW" \
             --message "Workflow: $GITHUB_WORKFLOW
 Branch: $GITHUB_REF
 Run ID: $GITHUB_RUN_ID
