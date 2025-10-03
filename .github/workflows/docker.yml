@@ -1,6 +1,5 @@
 name: Build and Push Docker Images
 
-# Trigger workflow on push to main branch
 on:
   push:
     branches:
@@ -16,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2 Set up Docker
+      # 2 Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -32,10 +31,11 @@ jobs:
         run: |
           docker build -t sudarshan101/my-docker-backend:latest ./iCinema
 
-      # 5 Build frontend Docker image
+      # 5 Build frontend Docker image (corrected path)
       - name: Build frontend image
         run: |
-          docker build -f frontend/Dockerfile -t sudarshan101/my-docker-frontend:latest ./iCinema/frontend
+          docker build -f iCinema/frontend/Dockerfile \
+            -t sudarshan101/my-docker-frontend:latest ./iCinema/frontend
 
       # 6 Push backend image
       - name: Push backend image
