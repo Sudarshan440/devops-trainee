@@ -1,9 +1,10 @@
 name: Deploy to EC2
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Docker Compose CI"]
+    types:
+      - completed
 
 jobs:
   deploy:
@@ -35,7 +36,7 @@ jobs:
         run: |
           echo "[icinema-server]" > iCinema/ansible/inventory.ini
           echo "${{ secrets.EC2_HOST }} ansible_user=${{ secrets.EC2_USER }} ansible_ssh_private_key_file=private_key.pem" >> iCinema/ansible/inventory.ini
-          
+
       - name: Run Ansible playbook
         run: |
           ansible-playbook -i iCinema/ansible/inventory.ini iCinema/ansible/playbook.yml
