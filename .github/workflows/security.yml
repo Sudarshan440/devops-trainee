@@ -18,7 +18,7 @@ jobs:
 
       # 2 Set up Trivy
       - name: Set up Trivy
-        uses: aquasecurity/trivy-action@master
+      - uses: aquasecurity/setup-trivy@v0.2.2
 
       # 3 Run Trivy filesystem scan
       - name: Run Trivy FS scan
