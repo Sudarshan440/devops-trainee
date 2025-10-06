@@ -73,8 +73,8 @@ jobs:
               --region "$AWS_REGION" \
               --topic-arn "$SNS_TOPIC_ARN" \
               --subject "Security Alert: Vulnerabilities Detected in Build" \
-              --message-group-id "github-actions" \
-              --message file://alert_snippet.log
+              --message "$(cat alert_snippet.log)"\
+              --message-group-id "github-actions"
           else
             echo "No major vulnerabilities found."
           fi
