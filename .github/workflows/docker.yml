@@ -72,6 +72,7 @@ jobs:
             --region "$AWS_REGION" \
             --topic-arn "$SNS_TOPIC_ARN" \
             --subject "GitHub Actions: Frontend Build Failed" \
+            --message-group-id "github-actions" \
             --message "$ERROR_LOG"
 
       # 9 Push frontend image
