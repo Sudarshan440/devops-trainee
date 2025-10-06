@@ -31,7 +31,7 @@ jobs:
         id: backend_build
         run: |
           mkdir -p logs
-          docker build -t sudarshan101/my-docker-backend:latest . 2>&1 | tee logs/backend_build.log
+          docker build -t sudarshan101/my-docker-backend:latest ./iCinema 2>&1 | tee logs/backend_build.log
           tail -n 50 logs/backend_build.log > logs/backend_snippet.log
 
       # 5 Notify via SNS if backend build fails
