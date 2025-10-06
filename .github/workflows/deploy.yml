@@ -2,7 +2,7 @@ name: Deploy to EC2
 
 on:
   workflow_run:
-    workflows: ["Docker Compose CI"]
+    workflows: ["Security Scans"]
     branches: [main]
     types:
       - completed
