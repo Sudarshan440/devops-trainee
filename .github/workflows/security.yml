@@ -1,11 +1,11 @@
 name: Security Scans
 
 on:
-  push:
-    branches:
-      - main
-      - feature/workflow
-  pull_request:
+  workflow_run:
+    workflows: ["Build and Push Docker Images"]
+    branches: [main]
+    types:
+      - completed
 
 jobs:
   security-scan:
