@@ -1,0 +1,22 @@
+node {
+    stage('Checkout') {
+        echo 'Checking out source code...'
+        checkout scm
+    }
+
+    stage('Build') {
+        echo 'Building iCinema project...'
+        // Example: if using Maven
+        // sh 'mvn clean package'
+    }
+
+    stage('Test') {
+        echo 'Running tests...'
+        // sh 'mvn test'
+    }
+
+    stage('Deploy') {
+        echo 'Deployment step (coming soon)'
+        // You can later add Docker build/push commands here
+    }
+}
