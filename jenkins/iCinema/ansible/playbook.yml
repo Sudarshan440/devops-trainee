@@ -1,0 +1,5 @@
+- name: Deploy iCinema app
+  hosts: icinema-server
+  become: true
+  roles:
+    - icinema

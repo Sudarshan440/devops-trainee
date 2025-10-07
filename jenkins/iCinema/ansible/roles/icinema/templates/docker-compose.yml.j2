@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  backend:
+    image: sudarshan101/my-docker:backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/iCinema
+    depends_on:
+      - mongo
+
+  frontend:
+    image: sudarshan101/my-docker:frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo:5
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongo_data:
