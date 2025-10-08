@@ -1,22 +1,64 @@
 node {
-    stage('Checkout') {
-        echo 'Checking out source code...'
+  stage('Checkout') {
         checkout scm
     }
 
-    stage('Build') {
-        echo 'Building iCinema project...'
-        // Example: if using Maven
-        // sh 'mvn clean package'
+  stage('Build Docker Images') {
+    withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', 
+                                     usernameVariable: 'DOCKER_USER', 
+                                     passwordVariable: 'DOCKER_PASS')]) {
+        sh '''
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            # Build backend image
+            docker build -t sudarshan101/my-docker-backend:latest ./iCinema
+
+            # Build frontend image
+            docker build -f iCinema/frontend/Dockerfile \
+                -t sudarshan101/my-docker-frontend:latest ./iCinema/frontend
+
+            # Push images
+            docker push sudarshan101/my-docker-backend:latest
+            docker push sudarshan101/my-docker-frontend:latest
+        '''
+      }
     }
 
-    stage('Test') {
-        echo 'Running tests...'
-        // sh 'mvn test'
+    stage('Security Scan') {
+        sh '''
+            mkdir -p security_logs
+            trivy fs --exit-code 0 --severity HIGH,CRITICAL ./iCinema | tee security_logs/trivy_fs.log
+            trivy image --exit-code 0 --severity HIGH,CRITICAL sudarshan101/my-docker-backend:latest | tee security_logs/trivy_backend.log
+            trivy image --exit-code 0 --severity HIGH,CRITICAL sudarshan101/my-docker-frontend:latest | tee security_logs/trivy_frontend.log
+        '''
     }
 
-    stage('Deploy') {
-        echo 'Deployment step (coming soon)'
-        // You can later add Docker build/push commands here
+    stage('Deploy to EC2') {
+        withAWS(credentials: 'aws-cred', region: 'us-east-1') {
+            sh '''
+                # Create dynamic inventory
+                echo "[icinema-server]" > iCinema/ansible/inventory.ini
+                echo "$EC2_HOST ansible_user=$EC2_USER ansible_ssh_private_key_file=/home/jenkins/.ssh/private_key.pem" >> iCinema/ansible/inventory.ini
+
+                # Run Ansible playbook
+                ansible-playbook -i iCinema/ansible/inventory.ini iCinema/ansible/playbook.yml
+            '''
+        }
+    }
+
+    stage('Notify on Failure') {
+        withAWS(credentials: 'aws-cred', region: 'us-east-1') {
+            sh '''
+                if grep -qiE "CRITICAL|HIGH|Secret" security_logs/*.log; then
+                    tail -n 50 security_logs/trivy_fs.log > security_logs/alert_snippet.log
+                    aws sns publish \
+                        --region us-east-1 \
+                        --topic-arn arn:aws:sns:us-east-1:123456789012:my-topic \
+                        --subject "Security Alert" \
+                        --message file://security_logs/alert_snippet.log \
+                        --message-group-id "github-actions"
+                fi
+            '''
+        }
     }
 }
