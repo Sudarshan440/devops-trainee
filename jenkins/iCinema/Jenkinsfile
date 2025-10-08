@@ -11,11 +11,11 @@ node {
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
             # Build backend image
-            docker build -t sudarshan101/my-docker-backend:latest ./iCinema
+            docker build -t sudarshan101/my-docker-backend:latest ./jenkins/iCinema
 
             # Build frontend image
-            docker build -f iCinema/frontend/Dockerfile \
-                -t sudarshan101/my-docker-frontend:latest ./iCinema/frontend
+            docker build -f jenkins/iCinema/frontend/Dockerfile \
+                -t sudarshan101/my-docker-frontend:latest ./jenkins/iCinema/frontend
 
             # Push images
             docker push sudarshan101/my-docker-backend:latest
