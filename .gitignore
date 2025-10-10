@@ -1,0 +1,49 @@
+
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.venv/
+env/
+venv/
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+
+# Local Terraform directories & state
+.terraform/
+.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+*.backup
+
+# Lock file (optional: keep this if you want to lock provider versions)
+# .terraform.lock.hcl
+
+# Variable and override files
+*.tfvars
+*.tfvars.json
+*_override.tf
+*_override.tf.json
+
+
+# Deployment package
+lambda.zip
+
+# Any temporary build outputs
+*.zip
+*.tar.gz
+
+
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+*.log
+logs/
+tmp/
